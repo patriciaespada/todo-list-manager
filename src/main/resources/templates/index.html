@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" ng-app="todoListManagerApp">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <title>Todo List Manager</title>
+	
+	<!-- Bootstrap core CSS -->
+	<link rel="stylesheet" href="/css/bootstrap.min.css" />
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js"></script>
+	<script type="text/javascript" src="/js/index.js"></script>
+</head>
+<body>
+
+	<div class="container" ng-controller="todoListManagerController">
+		<div class="header clearfix">
+			<nav>
+				<ul class="nav nav-pills pull-right">
+					<li role="presentation" class="active"><a href="#">Home</a></li>
+				</ul>
+			</nav>
+			<h3 class="text-muted">Todo List Manager</h3>
+		</div>
+
+		<br/><br/>
+		
+		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  			<div class="panel panel-default" ng-repeat="todoList in todoLists">
+    			<div class="panel-heading" role="tab" id="heading{{$index}}">
+					<h4 class="panel-title">
+						<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{$index}}" aria-expanded="true" aria-controls="collapse{{$index}}" ng-click="getTodosByTodoList(todoList._links.todos.href, todoList._links.self.href)">
+							{{todoList.todoListName}}
+						</a>
+					</h4>
+				</div>
+				<div id="collapse{{$index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{$index}}">
+					<div class="panel-body">
+						<span class="row col-md-offset-1" ng-if="todos.length == 0">
+								Attention! There are no Todo Itens for this Todo List.
+						</span>
+						<div class="row" ng-repeat="todo in todos" ng-init="toggle$index = true">
+							<div ng-show="toggle$index">
+								<div class="checkbox col-md-5 col-md-offset-1">
+									<label ng-if="todo.todoStatus == 'COMPLETED'" style="color: #999; text-decoration: line-through;">
+										<input id="{{todo._links.self.href}}" type="checkbox" value="{{todo._links.self.href}}" ng-checked="todo.todoStatus == 'COMPLETED'" ng-click="updateTodo($event, todo)" />
+										{{todo.todoName}}
+									</label>
+									<label ng-if="todo.todoStatus == 'ACTIVE'" style="color: #000; text-decoration: line-none;">
+										<input id="{{todo._links.self.href}}" type="checkbox" value="{{todo._links.self.href}}" ng-checked="todo.todoStatus == 'COMPLETED'" ng-click="updateTodo($event, todo)" />
+										{{todo.todoName}}
+									</label>
+								</div>
+								
+								<div class="col-md-1 col-md-offset-1">
+									<span ng-if="todo.todoPriority == 'HIGH'" class="label label-danger">
+										{{todo.todoPriority}}
+									</span>
+									<span ng-if="todo.todoPriority == 'MEDIUM'" class="label label-warning">
+										{{todo.todoPriority}}
+									</span>
+									<span ng-if="todo.todoPriority == 'LOW'" class="label label-info">
+										{{todo.todoPriority}}
+									</span>
+								</div>
+							
+								<div class="btn-group col-md-1">
+									<a href="" ng-if="todo.todoStatus == 'ACTIVE'" ng-click="$parent.toggle$index = !$parent.toggle$index" style="text-decoration: none;">
+									 	<i class="glyphicon glyphicon-pencil"></i>
+									</a>
+									<a href="" ng-click="deleteTodo(todo._links.self.href)" style="text-decoration: none;">
+									 	<i class="glyphicon glyphicon-trash"></i>
+									</a>						        
+							    </div>
+							</div>
+							
+							<div ng-hide="toggle$index">
+								<div class="col-md-7 col-md-offset-1">
+									<form ng-submit="updateTodo($event, todo)" class="form-inline">
+								        <input type="text" class="input" ng-model="todo.todoName" size="30" placeholder="add new todo item name here" />
+								        <select ng-model="todo.todoPriority" ng-options="priority as priority for priority in priorities">
+											<option value="">-- Select --</option>
+										</select>
+							      	</form>
+						      	</div>
+						      	<div class="btn-group col-md-1">
+									<a href="" ng-click="updateTodo($event, todo)" style="text-decoration: none;">
+									 	<i class="glyphicon glyphicon-floppy-disk"></i>
+									</a>
+									<a href="" ng-click="toggle$index = !toggle$index" style="text-decoration: none;">
+									 	<i class="glyphicon glyphicon-remove"></i>
+									</a>						        
+							    </div>
+							</div>
+						</div>
+
+						<br/><br/>
+						<div class="row col-md-offset-1">
+							<form ng-submit="addTodo(newTodoName, newTodoPriority)" class="form-inline">
+						        <input type="text" ng-model="newTodoName" size="30" placeholder="add new todo item here" />
+						        <select ng-model="newTodoPriority" ng-options="priority as priority for priority in priorities">
+									<option value="">-- Select --</option>
+								</select>
+								<input class="btn btn-link" type="submit" value="Add New Todo Item" />
+					      	</form>
+				      	</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<form ng-submit="addTodoList()" class="pull-right">
+	        <input type="text" ng-model="todoListName" size="30" placeholder="add new todo list here" />
+	        <input class="btn btn-primary" type="submit" value="Add New Todo List" />
+      	</form>
+	</div>
+	<!-- /.container -->
+
+	    
+	    
+	<!-- Bootstrap core JavaScript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+
+</body>
+</html>
